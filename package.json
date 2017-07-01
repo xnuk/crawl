@@ -1,0 +1,13 @@
+{
+  "name": "crawl-it",
+  "version": "1.0.0",
+  "description": "crawl webpage sanely",
+  "main": "index.js",
+  "repository": "https://github.com/xnuk/crawl",
+  "author": "Xnuk Shuman",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "css2xpath": "^0.0.1",
+    "libxmljs-dom": "^0.0.8"
+  }
+}
