@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "crawl webpage sanely",
   "main": "index.js",
-  "repository": "https://github.com/xnuk/crawl",
+  "repository": "https://github.com/xnuk/crawl-it",
   "author": "Xnuk Shuman",
   "license": "BSD-3-Clause",
   "dependencies": {
