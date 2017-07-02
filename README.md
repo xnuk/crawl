@@ -50,7 +50,7 @@ Parse html and get data
         ```
         [['selector1'], ['selector2'], [{foo: 'selector3'}]]
         ```
-      And if you want concating with these, use [CONVERT].
+      And if you want concating with these, use `[CONVERT]`.
         ```
         {
           [CONVERT]: x => [].concat(...x),
