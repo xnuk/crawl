@@ -42,7 +42,7 @@ Parse html and get data
 - `htmlSource`: HTML source string
 - `schema`: A value which explains how to get data
   - String schema: CSS and XPath selector powered by [css2xpath](https://github.com/css2xpath/css2xpath).
-                   Returns matching node's `text`, or `value` if it's self closing tag.
+                   Returns matching node's `text`, or `value` if it doesn't exist.
   - Empty array: Returns `[]`.
   - Array contains single schema: Finds all matching data with the schema and returns it's array.
   - Array contains two or more schema: Finds first-matching data with each schema and returns it's array, like tuple.
