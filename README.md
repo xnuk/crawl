@@ -36,7 +36,7 @@ data = {
 */
 ```
 
-### `parse(htmlSource: string, schema: object or string or array)`
+### `parse(htmlSource: string, schema: object or string or array, option: {xml: boolean, huge: boolean})`
 Parse html and get data
 
 - `htmlSource`: HTML source string
@@ -61,3 +61,6 @@ Parse html and get data
     - `[SELECTOR]`: (string) Set base selector of each schema to this.
     - `[CONVERT]`: (Function: Any => Any) Convert this data object to another.
     - `[DATA]`: (string or array or object schema) Override schema to this schema, not current object schema.
+- `option`:
+  - `xml`: Parse as XML, not HTML. default is false.
+  - `huge`: Treat as huge source. default is true.

@@ -1,5 +1,5 @@
 'use strict'
-const {parseHtml, Document, Element} = require('libxmljs-dom')
+const {parseHtml, parseXml, Document, Element} = require('libxmljs-dom')
 const css2xpath = require('css2xpath')
 
 /*
@@ -83,8 +83,8 @@ function* traverse(node, ob) {
 	return null
 }
 
-const parse = (html, ob) => {
-	const doc = parseHtml(html, {huge: true})
+const parse = (source, ob, {xml, huge} = {xml: false, huge: true}) => {
+	const doc = (xml ? parseXml : parseHtml)(source, {huge})
 
 	if(doc == null) throw new Error("Couldn't parse it")
 	if(doc.errors[0] && doc.errors[0].code === 4) throw new Error("Document is empty")
