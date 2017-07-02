@@ -3,9 +3,9 @@ const {parseHtml, Document, Element} = require('libxmljs-dom')
 const css2xpath = require('css2xpath')
 
 /*
-  Code from https://github.com/rchipka/node-osmosis/blob/master/index.js
-  because libxmljs-dom is poorly documented.
-  It uses MIT License, but @rchipka doesn't add LICENSE file to the repo.
+	Code from https://github.com/rchipka/node-osmosis/blob/master/index.js
+	because libxmljs-dom is poorly documented.
+	It uses MIT License, but @rchipka doesn't add LICENSE file to the repo.
 */
 
 // rchipka/node-osmosis CODE STARTS HERE
@@ -24,64 +24,73 @@ Element.prototype.find = function(selector) {
 
 // rchipka/node-osmosis CODE ENDS HERE
 
-
+// Special properties
 const SELECTOR = Symbol('SELECTOR')
 const CONVERT = Symbol('CONVERT')
 const DATA = Symbol('DATA')
 
-function* sex(node, ob){
+function* traverse(node, ob) {
+	// Array
 	if(Array.isArray(ob)) {
 		if(ob.length === 0) yield []
-		else if(ob.length === 1) yield [...sex(node, ob[0])]
-		else yield ob.map(o => sex(node, o).next().value)
+		else if(ob.length === 1) yield [...traverse(node, ob[0])] // get all
+		else yield ob.map(o => traverse(node, o).next().value) // get each
 		return null
 	}
 
+	// String (selector)
 	if(typeof ob === 'string') {
-		yield* getValues(node, ob)
-		return null
+		yield* node.find(ob).map(v => (v.text || v.value).apply(v)) // stringify
+		return null // if doesn't exist
 	}
 
+	// Object
 	if(typeof ob === 'object' && ob != null) {
-		let data = ob[DATA]
+		// use DATA as schema if it's defined
+		let _data = ob[DATA]
 		if(ob[DATA] == null) {
-			data = Object.assign(Object.create(null), ob)
-			delete data[SELECTOR]
-			delete data[CONVERT]
+			// use itself with removing special keys
+			_data = Object.assign(Object.create(null), ob)
+			delete _data[SELECTOR]
+			delete _data[CONVERT]
+			delete _data[DATA]
 		}
+		const data = _data
+
+		// use SELECTOR as base selector if it's defined, or use `node`
 		const nodes = (ob[SELECTOR] == null) ? [node] : node.find(ob[SELECTOR])
+
+		// use CONVERT as convert function(data => newdata)
 		const func = (ob[CONVERT] instanceof Function) ? ob[CONVERT] : null
 
+		// if `data` is Object, traverse each values.
 		if(typeof data === 'object' && !Array.isArray(data) && data != null) {
 			const entries = Object.entries(data)
 			for(const newNode of nodes) {
 				let o = {}
-				for(const [k, v] of entries) o[k] = sex(newNode, v).next().value
-				if(func != null) o = func(o)
+				for(const [k, v] of entries) o[k] = traverse(newNode, v).next().value
+				if(func != null) o = func(o) // CONVERT function apply
 				yield o
 			}
-		} else if(func != null) {
-			for(const newNode of nodes) for(const v of sex(newNode, data)) yield func(v)
-		} else for(const newNode of nodes) yield* sex(newNode, data)
+		} else for(const newNode of nodes) {
+			if(func != null) for(const v of traverse(newNode, data)) yield func(v) // CONVERT function apply
+			else yield* traverse(newNode, data)
+		}
+
 		return null
 	}
 
 	return null
 }
 
-function* getValues(node, selector) {
-	yield* (node.find(selector).map(v => (v.text || v.value).apply(v)))
-	return null
-}
-
 const parse = (html, ob) => {
-	'use strict'
 	const doc = parseHtml(html, {huge: true})
-	if(doc == null) throw new Error('couldn\'t parse it')
-	if(doc.errors[0] && doc.errors[0].code === 4) throw new Error('document is empty')
-	if(doc.root() == null) throw new Error('document has no root')
 
-	return sex(doc, ob).next().value
+	if(doc == null) throw new Error("Couldn't parse it")
+	if(doc.errors[0] && doc.errors[0].code === 4) throw new Error("Document is empty")
+	if(doc.root() == null) throw new Error('Document has no root')
+
+	return traverse(doc, ob).next().value
 }
 
-module.exports = {parse, SELECTOR, CONVERT, DATA, getValues, parseHtml}
+module.exports = {parse, SELECTOR, CONVERT, DATA}
