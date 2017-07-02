@@ -50,6 +50,13 @@ Parse html and get data
         ```
         [['selector1'], ['selector2'], [{foo: 'selector3'}]]
         ```
+      And if you want concating with these, use [CONVERT].
+        ```
+        {
+          [CONVERT]: x => [].concat(...x),
+          [DATA]: [['selector1'], ['selector2'], [{foo: 'selector3'}]]
+        }
+        ```
   - Object: Finds with each schema and returns it's object.
     - `[SELECTOR]`: (string) Set base selector of each schema to this.
     - `[CONVERT]`: (Function: Any => Any) Convert this data object to another.
