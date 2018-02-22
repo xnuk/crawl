@@ -78,7 +78,7 @@ function* traverse(node, ob) {
 		const func = (ob[CONVERT] instanceof Function) ? ob[CONVERT] : null
 
 		// if `data` is Object, traverse each values.
-		if(typeof data === 'object' && !Array.isArray(data) && data != null) {
+		if(typeof data === 'object' && !Array.isArray(data) && data != null && !isXPath(data)) {
 			const entries = Object.entries(data)
 			for(const newNode of nodes) {
 				let o = {}
