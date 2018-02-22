@@ -2,6 +2,14 @@
 const {parseHtml, parseXml, Document, Element} = require('libxmljs-dom')
 const css2xpath = require('css2xpath')
 
+const XPATH = Symbol('XPATH')
+const XPath = x => ({[XPATH]: x})
+const isXPath = o =>
+	typeof o === 'object' &&
+	o != null &&
+	o[XPATH] != null &&
+	typeof o[XPATH] === 'string'
+
 /*
 	Code from https://github.com/rchipka/node-osmosis/blob/master/index.js
 	because libxmljs-dom is poorly documented.
@@ -18,7 +26,7 @@ Element.prototype.findXPath = Element.prototype.find
 Document.prototype.find = function(selector, cache) { return this.root().find(selector, cache) }
 
 Element.prototype.find = function(selector) {
-	if(selector[0] === '/' || selector[0] === '(' || selector[1] === '/') return this.findXPath(selector)
+	if(isXPath(selector)) return this.findXPath(selector[XPATH])
 	return this.findXPath(cachedSelectors[selector] || (cachedSelectors[selector] = css2xpath(selector))) || []
 }
 
@@ -38,8 +46,8 @@ function* traverse(node, ob) {
 		return null
 	}
 
-	// String (selector)
-	if(typeof ob === 'string') {
+	// String or XPath (selector)
+	if(typeof ob === 'string' || isXPath(ob)) {
 		yield* node.find(ob).map(v => (v.text || v.value).apply(v)) // stringify
 		return null // if doesn't exist
 	}
@@ -93,4 +101,4 @@ const parse = (source, ob, {xml, huge} = {xml: false, huge: true}) => {
 	return traverse(doc, ob).next().value
 }
 
-module.exports = {parse, SELECTOR, CONVERT, DATA}
+module.exports = {parse, SELECTOR, CONVERT, DATA, XPath}

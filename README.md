@@ -3,7 +3,7 @@ you can make a religion out of this
 
 ## How to use
 ```javascript
-const {parse, SELECTOR, CONVERT, DATA} = require('crawl-it')
+const {parse, SELECTOR, CONVERT, DATA, XPath} = require('crawl-it')
 
 const data = parse(require('fs').readFileSync('path/to/file.html'), {
     cats: ['#cats > div.rows > div.name'],
@@ -17,6 +17,9 @@ const data = parse(require('fs').readFileSync('path/to/file.html'), {
         name: 'div.name', // You can use CSS selector
         pic: './/img/@src', // or XPath
         link: '.more>a/@href' // or both!
+
+        // You can use strict XPath selector if it matters
+        // pic: XPath('.//img/@src')
     }],
     copyright: {
         [CONVERT]: x => x.toLowerCase(),
@@ -36,7 +39,10 @@ data = {
 */
 ```
 
-### `parse(htmlSource: string, schema: object or string or array, option: {xml: boolean, huge: boolean})`
+### `parse`
+```
+parse(htmlSource: string, schema: object or string or array, option: {xml: boolean, huge: boolean})
+```
 Parse html and get data
 
 - `htmlSource`: HTML source string
@@ -64,3 +70,11 @@ Parse html and get data
 - `option`:
   - `xml`: Parse as XML, not HTML. default is false.
   - `huge`: Treat as huge source. default is true.
+
+### `XPath`
+```
+XPath(xpath: string)
+```
+Treat as strict XPath.
+
+- `xpath`: Pure XPath selector. Mixing with CSS is not allowed.
