@@ -48,8 +48,14 @@ function* traverse(node, ob) {
 
 	// String or XPath (selector)
 	if(typeof ob === 'string' || isXPath(ob)) {
-		yield* node.find(ob).map(v => (v.text || v.value).apply(v)) // stringify
-		return null // if doesn't exist
+		// this could be not an array if XPath function is used
+		const z = node.find(ob)
+
+		if(Array.isArray(z)) {
+			yield* node.find(ob).map(v => (v.text || v.value).apply(v)) // stringify
+		} else {
+			return z
+		}
 	}
 
 	// Object
